@@ -2,13 +2,20 @@
 import { H5P } from "h5p-standalone";
 import { useEffect, useRef } from "react";
 
-function H5pPlayer({ h5pJsonPath }: { h5pJsonPath: string }) {
+function H5pPlayer({
+  h5pJsonPath,
+  contentJsonPath,
+}: {
+  h5pJsonPath: string;
+  contentJsonPath?: string;
+}) {
   const h5pContainer = useRef(null);
 
   useEffect(() => {
     const el = h5pContainer.current;
     const options = {
       h5pJsonPath,
+      ...(contentJsonPath && { contentJsonPath }),
       frameJs: "/assets/frame.bundle.js",
       frameCss: "/assets/styles/h5p.css",
     };

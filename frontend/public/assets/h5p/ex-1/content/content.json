@@ -3,7 +3,7 @@
     "video": {
       "files": [
         {
-          "path": "https:\/\/h5p.org\/sites\/default\/files\/h5p\/iv.webm",
+          "path": "videos\/iv.webm",
           "mime": "video\/webm",
           "copyright": {
             "license": "CC BY",
@@ -14,7 +14,7 @@
           }
         },
         {
-          "path": "https:\/\/h5p.org\/sites\/default\/files\/h5p\/iv.mp4",
+          "path": "videos\/iv.mp4",
           "mime": "video\/mp4",
           "copyright": {
             "license": "CC BY",

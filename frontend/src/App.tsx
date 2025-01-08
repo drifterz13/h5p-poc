@@ -4,9 +4,13 @@ import "./index.css";
 export default function App() {
   return (
     <div className="App">
-      <h1>H5P Standalone in React</h1>
-      <h2>For or Since</h2>
-      <H5pPlayer h5pJsonPath="/assets/h5p/ex-1" />
+      <div>
+        <h1>
+          Example 1 - External from
+          <a href="https://h5p.org/sites/default/files/h5p/iv.webm">source</a>
+        </h1>
+        <H5pPlayer h5pJsonPath="/assets/h5p/ex-1" />
+      </div>
     </div>
   );
 }

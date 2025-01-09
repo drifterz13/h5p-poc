@@ -23,7 +23,7 @@ export class VideoController {
     @Res() response: Response,
   ) {
     try {
-      const buffer = await this.huaweiObsService.getH5PFile(
+      const bufferOrString = await this.huaweiObsService.getH5PFile(
         contentId,
         filePath,
       );
@@ -42,14 +42,20 @@ export class VideoController {
         webm: 'video/webm',
       };
 
+      if (typeof bufferOrString === 'string') {
+        this.logger.debug(`redirect to storage url = ${bufferOrString}`);
+        return response.redirect(bufferOrString);
+      }
+
       response.setHeaders(
         new Headers({
           'Content-Type': contentTypes[ext] || 'application/octet-stream',
           'Cache-Control': 'max-age=3600',
+          'Access-Control-Allow-Origin': '*',
         }),
       );
 
-      return response.send(buffer);
+      return response.send(bufferOrString);
     } catch (error) {
       throw new NotFoundException(error.message);
     }

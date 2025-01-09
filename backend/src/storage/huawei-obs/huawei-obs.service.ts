@@ -6,7 +6,6 @@ import { IStorageService } from '../storage.interface';
 @Injectable()
 export class HuaweiObsService implements IStorageService {
   private obsClient: ObsClient;
-
   private logger = new Logger(HuaweiObsService.name);
 
   constructor(private huaweiObsConfig: HuaweiObsConfig) {
@@ -19,7 +18,26 @@ export class HuaweiObsService implements IStorageService {
     });
   }
 
-  async getH5PFile(contentId: string, filePath: string): Promise<Buffer> {
+  async getH5PFile(
+    contentId: string,
+    filePath: string,
+  ): Promise<Buffer | string> {
+    if (
+      ['.png', '.jpg', '.jpeg', '.svg', '.woff', '.woff2', '.ttf'].some((ext) =>
+        filePath.endsWith(ext),
+      )
+    ) {
+      // TODO: Create pre-signed url when using it in production
+      return this.getHuaweiObsLink(`/${contentId}/${filePath}`);
+    }
+
+    return this.getH5PFileAsBuffer(contentId, filePath);
+  }
+
+  private async getH5PFileAsBuffer(
+    contentId: string,
+    filePath: string,
+  ): Promise<Buffer> {
     const bucket = this.huaweiObsConfig.HUAWEI_OBS_BUCKET_NAME;
     const objectPath = `${contentId}/${filePath}`;
 
@@ -43,22 +61,16 @@ export class HuaweiObsService implements IStorageService {
     }
   }
 
-  async getH5PConfig(contentId: string): Promise<{
-    h5pJson: any;
-    contentJson: any;
-  }> {
-    try {
-      const [h5pBuffer, contentBuffer] = await Promise.all([
-        this.getH5PFile(contentId, 'h5p.json'),
-        this.getH5PFile(contentId, 'content/content.json'),
-      ]);
-
-      return {
-        h5pJson: JSON.parse(h5pBuffer.toString()),
-        contentJson: JSON.parse(contentBuffer.toString()),
-      };
-    } catch (error) {
-      throw new Error(`Failed to get H5P configuration: ${error.message}`);
+  private getHuaweiObsLink(path: string): string {
+    const obsEndpoint = this.huaweiObsConfig.HUAWEI_OBS_ENDPOINT.replace(
+      'https://',
+      '',
+    );
+    let finalizedPath = path;
+    if (path.startsWith('/')) {
+      finalizedPath = path.substring(1);
     }
+
+    return `https://${this.huaweiObsConfig.HUAWEI_OBS_BUCKET_NAME}.${obsEndpoint}${finalizedPath}`;
   }
 }

@@ -48,8 +48,6 @@ export class VideoController {
         }),
       );
 
-      this.logger.debug(`Buffer string = ${buffer.toString()}`);
-
       return response.send(buffer);
     } catch (error) {
       throw new NotFoundException(error.message);

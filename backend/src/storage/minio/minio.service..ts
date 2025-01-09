@@ -1,9 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as Minio from 'minio';
 import { MinioConfig } from './minio.config';
+import { IStorageService } from '../storage.interface';
 
 @Injectable()
-export class MinioService {
+export class MinioService implements IStorageService {
   private minioClient: Minio.Client;
   private logger = new Logger(MinioService.name);
 

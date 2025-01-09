@@ -6,14 +6,14 @@ import {
   Param,
   Res,
 } from '@nestjs/common';
-import { MinioService } from 'src/storage/minio/minio.service.';
 import { Response } from 'express';
+import { HuaweiObsService } from 'src/storage/huawei-obs/huawei-obs.service';
 
 @Controller('videos')
 export class VideoController {
   private logger = new Logger(VideoController.name);
 
-  constructor(private minioService: MinioService) {}
+  constructor(private huaweiObsService: HuaweiObsService) {}
 
   // Serve all H5P content files through this endpoint
   @Get(':contentId/*')
@@ -22,10 +22,11 @@ export class VideoController {
     @Param('0') filePath: string,
     @Res() response: Response,
   ) {
-    this.logger.debug(`contentId = ${contentId}, filePath = ${filePath}`);
-
     try {
-      const buffer = await this.minioService.getH5PFile(contentId, filePath);
+      const buffer = await this.huaweiObsService.getH5PFile(
+        contentId,
+        filePath,
+      );
 
       // Set appropriate content type
       const ext = filePath.split('.').pop().toLowerCase();
@@ -47,8 +48,6 @@ export class VideoController {
           'Cache-Control': 'max-age=3600',
         }),
       );
-
-      this.logger.debug(`Buffer string = ${buffer.toString()}`);
 
       return response.send(buffer);
     } catch (error) {

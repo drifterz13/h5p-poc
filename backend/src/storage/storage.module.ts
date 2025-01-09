@@ -5,9 +5,17 @@ import minioConfig, {
   MINIO_CONFIG_TOKEN,
   MinioConfig,
 } from './minio/minio.config';
+import huaweiObsConfig, {
+  HUAWEI_OBS_CONFIG_TOKEN,
+  HuaweiObsConfig,
+} from './huawei-obs/huawei-obs.config';
+import { HuaweiObsService } from './huawei-obs/huawei-obs.service';
 
 @Module({
-  imports: [ConfigModule.forFeature(minioConfig)],
+  imports: [
+    ConfigModule.forFeature(minioConfig),
+    ConfigModule.forFeature(huaweiObsConfig),
+  ],
   providers: [
     {
       provide: MinioService,
@@ -17,7 +25,17 @@ import minioConfig, {
       },
       inject: [ConfigService],
     },
+    {
+      provide: HuaweiObsService,
+      useFactory: (configService: ConfigService) => {
+        const huaweiObsConfig = configService.get<HuaweiObsConfig>(
+          HUAWEI_OBS_CONFIG_TOKEN,
+        );
+        return new HuaweiObsService(huaweiObsConfig);
+      },
+      inject: [ConfigService],
+    },
   ],
-  exports: [MinioService],
+  exports: [MinioService, HuaweiObsService],
 })
 export class StorageModule {}

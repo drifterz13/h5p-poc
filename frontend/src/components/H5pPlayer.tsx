@@ -28,7 +28,7 @@ function H5pPlayer({
           console.log("Err: ", e);
         });
     };
-  }, [h5pJsonPath, h5pContainer]);
+  }, [h5pJsonPath, h5pContainer, contentJsonPath]);
 
   return (
     <>

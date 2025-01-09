@@ -1,9 +1,11 @@
 import {
+  Body,
   Controller,
   Get,
   Logger,
   NotFoundException,
   Param,
+  Post,
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -14,6 +16,13 @@ export class VideoController {
   private logger = new Logger(VideoController.name);
 
   constructor(private huaweiObsService: HuaweiObsService) {}
+
+  @Post('finish')
+  async finishVideo(@Body() body: any, @Res() res: Response) {
+    this.logger.debug(`Video finished: ${JSON.stringify(body, null, 4)}`);
+
+    return res.status(200).send('ok');
+  }
 
   // Serve all H5P content files through this endpoint
   @Get(':contentId/*')

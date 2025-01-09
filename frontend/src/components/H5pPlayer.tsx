@@ -18,11 +18,22 @@ function H5pPlayer({
       ...(contentJsonPath && { contentJsonPath }),
       frameJs: "/assets/frame.bundle.js",
       frameCss: "/assets/styles/h5p.css",
+      // Trigger API calls to the server.
+      postUserStatistics: true,
+      ajax: {
+        setFinishedUrl: "http://localhost:3000/videos/finish",
+      },
     };
     return () => {
       new H5P(el, options)
         .then((res: unknown) => {
           console.log(res);
+
+          // @ts-expect-error "Property 'H5P' does not exist on type 'Window & typeof globalThis'"
+          window.H5P.externalDispatcher.on("xAPI", (event: unknown) => {
+            //do something useful with the event
+            console.log("xAPI event: ", event);
+          });
         })
         .catch((e: unknown) => {
           console.log("Err: ", e);

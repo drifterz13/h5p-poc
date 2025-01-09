@@ -1,50 +1,25 @@
-# React + TypeScript + Vite
+# Huawei OBS + H5P POC
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Results
 
-Currently, two official plugins are available:
+### H5P standalone
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- We can listening to `xApi` events when user interact with interactive content. See [here](https://github.com/tunapanda/h5p-standalone?tab=readme-ov-file#h5p-options)
+- We can configure the player to send `POST /my-api` when user finish the video. However, the API will not be sent if user does not submitting the form. **WE MAY NEED TO FIND WORKAROUND**
+- The player can understand url path to config files and assets files eg. `https://my-domain/assets/h5p.json`
 
-## Expanding the ESLint configuration
+### Huawei OBS
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- We can use [esdk-obs-nodejs](https://www.npmjs.com/package/esdk-obs-nodejs) sdk to get assets (object) from Huawei OBS.
+- Some assets like (images, fonts) need to be handled by let the server redirect the request to file to Huawei OBS Url. Please refer to the code and screentshot below.
 
-- Configure the top-level `parserOptions` property like this:
+### Results
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+1. Serving H5P content from Huawei OBS
+   ![huawei-obs-assets](/frontend/public/examples/huawei-obs-assets.png)
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+2. Listening to xApi events
+   ![xapi-events](/frontend/public/examples/x-api-event.png)
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+3. Sending API when user finish the video
+   ![send-api](/frontend/public/examples/finish-api.png)

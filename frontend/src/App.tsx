@@ -4,7 +4,7 @@ import "./index.css";
 export default function App() {
   return (
     <div className="App">
-      <h1>Video example: 1</h1>
+      <h1>Video example: 2</h1>
       <H5pPlayer
         h5pJsonPath="http://localhost:3000/videos/ex-1"
         contentJsonPath="http://localhost:3000/videos/ex-1/content"

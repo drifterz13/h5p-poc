@@ -1,6 +1,5 @@
-// @ts-expect-error "Cannot find module 'h5p-standalone'"
 import { H5P } from "h5p-standalone";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function H5pPlayer({
   h5pJsonPath,
@@ -9,9 +8,31 @@ function H5pPlayer({
   h5pJsonPath: string;
   contentJsonPath?: string;
 }) {
-  const h5pContainer = useRef(null);
+  const h5pContainer = useRef<HTMLDivElement | null>(null);
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
+    if (!initialized) return;
+
+    const h5pIframe = document.querySelector(".h5p-iframe") as HTMLIFrameElement;
+    if (h5pIframe) {
+      const h5pIframeInstance = (h5pIframe.contentWindow as any).H5P;
+      console.log("H5P instance: ", h5pIframeInstance);
+
+      const iframeVideo = h5pIframeInstance.instances[0].video
+      iframeVideo.on("stateChange", (event) => {
+        if ((event as { data: unknown }).data === 0) {
+          console.log("Video finished");
+          alert("Video finished")
+        }
+      })
+    }
+
+  }, [initialized])
+
+  useEffect(() => {
+    if (initialized) return;
+
     const el = h5pContainer.current;
     const options = {
       h5pJsonPath,
@@ -20,26 +41,25 @@ function H5pPlayer({
       frameCss: "/assets/styles/h5p.css",
       // Trigger API calls to the server.
       postUserStatistics: true,
+      reportingIsEnabled: true,
       ajax: {
         setFinishedUrl: "http://localhost:3000/videos/finish",
       },
     };
-    return () => {
-      new H5P(el, options)
-        .then((res: unknown) => {
-          console.log(res);
 
-          // @ts-expect-error "Property 'H5P' does not exist on type 'Window & typeof globalThis'"
-          window.H5P.externalDispatcher.on("xAPI", (event: unknown) => {
-            //do something useful with the event
-            console.log("xAPI event: ", event);
-          });
-        })
-        .catch((e: unknown) => {
-          console.log("Err: ", e);
+    new H5P(el, options)
+      .then((res: unknown) => {
+        console.log(res);
+
+        (window as any).H5P.externalDispatcher.on("xAPI", (event: unknown) => {
+          console.log("xAPI event: ", event);
+          setInitialized(true)
         });
-    };
-  }, [h5pJsonPath, h5pContainer, contentJsonPath]);
+      })
+      .catch((e: unknown) => {
+        console.log("Err: ", e);
+      });
+  }, [initialized, h5pJsonPath, h5pContainer, contentJsonPath]);
 
   return (
     <>
